@@ -1,0 +1,10 @@
+
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                           controllers.HaseeBcoinController.index
+POST    /users                      controllers.HaseeBcoinController.users(name)
+GET     /balance/:name              controllers.HaseeBcoinController.balance(name)
+POST    /transfers                  controllers.HaseeBcoinController.transfer(from, to, amount: Double)
