@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.HaseeBcoinService
 
@@ -12,9 +12,7 @@ import services.HaseeBcoinService
   */
 @Singleton
 class HaseeBcoinController @Inject()(cc: ControllerComponents,
-                                     bcoinService: HaseeBcoinService) extends AbstractController(cc) {
-
-  val logger = Logger(this.getClass)
+                                     bcoinService: HaseeBcoinService) extends AbstractController(cc) with Logging {
 
   def index = Action {
     Ok("Hello world")
