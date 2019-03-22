@@ -59,6 +59,8 @@ class HaseeBcoinController @Inject()(cc: ControllerComponents,
 
 
   private def printState(): Unit = {
-    logger.info(bcoinService.allUserState().toString())
+    import play.utils.Colors
+    val allState = bcoinService.allUserState().toString()
+    logger.info(Colors.green(allState))
   }
 }
