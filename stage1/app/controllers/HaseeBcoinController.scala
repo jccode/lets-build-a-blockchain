@@ -37,9 +37,9 @@ class HaseeBcoinController @Inject()(cc: ControllerComponents,
     * @return
     */
   def balance(name: String) = Action {
-    bcoinService.getBalance(name)
+    val maybeAmount = bcoinService.getBalance(name)
     printState()
-    Ok(s"Get $name balance")
+    Ok(s"Get $name balance ${maybeAmount.getOrElse("")}")
   }
 
 

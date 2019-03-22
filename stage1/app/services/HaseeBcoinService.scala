@@ -22,7 +22,7 @@ trait HaseeBcoinService {
 @Singleton
 class HaseeBcoinServiceImpl extends HaseeBcoinService {
 
-  private var balances = scala.collection.mutable.Map[User, Amount]("haseeb" -> 100000)
+  private var balances = scala.collection.mutable.Map[User, Amount]("michael" -> 100000)
 
   override def createUser(user: User): Unit = if (!balances.contains(user)) balances += (user -> 0)
 
