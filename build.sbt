@@ -19,6 +19,10 @@ lazy val stage1 = (project in file("stage1"))
   )
 
 lazy val stage2 = (project in file("stage2"))
+  .enablePlugins(PlayScala)
+  .settings(
+    libraryDependencies ++= Seq( guice, ws )
+  )
 
 lazy val stage3 = (project in file("stage3"))
 
