@@ -25,6 +25,9 @@ lazy val stage2 = (project in file("stage2"))
   )
 
 lazy val stage3 = (project in file("stage3"))
+  .settings(
+    libraryDependencies ++= Seq( akkaHttpServer, logback, ws )
+  )
 
 lazy val stage4 = (project in file("stage4"))
 
