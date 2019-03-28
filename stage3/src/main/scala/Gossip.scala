@@ -1,6 +1,7 @@
 
 import akka.actor.Cancellable
 
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.io.Source
 import scala.util.Random
@@ -11,7 +12,7 @@ import scala.util.Random
   *
   * @author 01372461
   */
-class Gossip(val port: Int, val peerPort: Int) {
+class Gossip(val port: Int, val peerPort: Int, val globalState: GlobalState, val playServer: EmbeddingPlayServer, val client: Client) {
 
   //val logger = Logger(getClass)
 
@@ -31,31 +32,12 @@ class Gossip(val port: Int, val peerPort: Int) {
   var versionNumber: Int = 0
 
 
-
-
-  /**
-    * versioned favourite movie
-    */
-  type VFM = (String, Int)
-  type PORT = Int
-
-
-  /**
-    * Global states
-    */
-  var state: Map[PORT, VFM] = Map()
-
   /**
     * Return a random movie
     * @return
     */
   def randomMovie(): String = movies(Random.nextInt(movies.length))
 
-
-  /**
-    * start play server
-    */
-  val playServer = new EmbeddingPlayServer(port)
 
   import playServer.components.actorSystem.dispatcher
 
@@ -71,29 +53,38 @@ class Gossip(val port: Int, val peerPort: Int) {
   }
 
 
-  def updateState(s: Map[PORT, VFM]): Map[PORT, VFM] = {
-    val m: Seq[(PORT, VFM)] = state.toSeq ++ s.toSeq
-    val g: Map[PORT, Seq[(PORT, (String, PORT))]] = m.groupBy(_._1)
-    g.mapValues(_.sortBy(_._2._2).reverse.head._2)
-  }
-
-  def renderState(s: Map[PORT, VFM]) = {
-    s.toSeq.sortBy(_._1).map {
-      case (port, (movie, version)) => s"$port currently likes $movie ($version)"
-    }.foreach(println)
-  }
-
 
   /*
-  Constructors
- */
+  Init value
+   */
+  globalState.updateState(Map(port -> (null, 0), peerPort -> (null, 0)))
+
+
   every(8 seconds, () => {
     println(s"Screw <$favoriteMovie>")
     versionNumber += 1
     favoriteMovie = randomMovie()
-    state = updateState(Map(port -> (favoriteMovie, versionNumber)))
+    globalState.updateState(Map(port -> (favoriteMovie, versionNumber)))
     println(s"New favorite is <$favoriteMovie> ($versionNumber)")
   })
 
-
+  every(3 seconds, () => {
+    println("Exchange with peer port")
+    globalState.state.keys.filter(_ != port).foreach { p =>
+      val res: Future[Option[Map[Int, (String, Int)]]] = client.gossip(p, globalState.state)
+      try {
+        Await.result(
+          res.map {
+            case Some(state) => globalState.updateState(state)
+            case None => globalState.removeState(port)
+          }
+          , 5 seconds)
+      } catch {
+        case e: Exception => {
+          println(s"Cannot connect to $p")
+          //globalState.removeState(p)
+        }
+      }
+    }
+  })
 }
