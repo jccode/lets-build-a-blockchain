@@ -15,8 +15,8 @@ class GossipController @Inject()(cc: ControllerComponents) extends AbstractContr
     Ok("Hello world")
   }
 
-  def gossip = Action {
-    logger.info("---- Gossip ----")
+  def gossip(state: String) = Action {
+    println(s"their state: $state")
     Ok("gossip")
   }
 

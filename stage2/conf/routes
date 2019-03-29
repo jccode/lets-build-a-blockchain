@@ -5,4 +5,4 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.GossipController.index
-GET     /gossip                     controllers.GossipController.gossip
+POST     /gossip                     controllers.GossipController.gossip(state: String)
