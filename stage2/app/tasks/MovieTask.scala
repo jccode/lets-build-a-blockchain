@@ -18,6 +18,7 @@ import scala.util.Random
   *
   * @author 01372461
   */
+
 class MovieTask @Inject()(actorSystem: ActorSystem,
                           gs: GossipService,
                           config: Configuration,
@@ -55,14 +56,14 @@ class MovieTask @Inject()(actorSystem: ActorSystem,
   /*
   Init value
    */
-  gs.updateState(Map(port -> (null, 0), peerPort -> (null, 0)))
+  gs.updateState(Map(port -> ("", 0), peerPort -> ("", 0)))
 
 
   every(8 seconds, () => {
     logger.info(s"Screw <$favoriteMovie>")
     versionNumber += 1
     favoriteMovie = randomMovie()
-    logger.info(s"current port: $port")
+    // logger.info(s"current port: $port")
     gs.updateState(Map(port -> (favoriteMovie, versionNumber)))
     logger.info(s"New favorite is <$favoriteMovie> ($versionNumber)")
   })

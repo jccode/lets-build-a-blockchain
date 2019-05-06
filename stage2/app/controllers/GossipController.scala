@@ -18,7 +18,7 @@ class GossipController @Inject()(cc: ControllerComponents, gs: GossipService) ex
   }
 
   def gossip(state: String) = Action {
-    logger.info(s"their state: $state")
+    logger.info(s"Their state: $state")
 
     // merge their state
     val theirState: Option[Map[Int, (String, Int)]] =
